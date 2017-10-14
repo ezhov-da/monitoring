@@ -43,6 +43,7 @@ public class FileMonitorIml implements FileMonitor {
         this.appConfig = AppConfigInstance.getConfig();
     }
 
+    @SuppressWarnings("unchecked")
     public final void run() {
         try {
             LOG.info("start file monitor in folder: " + this.pathMonitor);

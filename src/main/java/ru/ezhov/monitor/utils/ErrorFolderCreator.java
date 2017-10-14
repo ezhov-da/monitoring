@@ -6,9 +6,7 @@ public class ErrorFolderCreator {
     private final String pathBasic;
 
     public ErrorFolderCreator(final String pathBasic) {
-
         this.pathBasic = pathBasic;
-
     }
 
     public final void checkAndCreateFolderExceptionFiles() {
