@@ -3,10 +3,6 @@ package ru.ezhov.monitor.beans;
 import com.google.common.base.MoreObjects;
 import org.apache.log4j.Logger;
 
-/**
- * Объект с информацией
- * @author ezhov_da
- */
 public class DataJsonObjectMonitor {
     private static final Logger LOG = Logger
             .getLogger(DataJsonObjectMonitor.class.getName());
@@ -25,7 +21,8 @@ public class DataJsonObjectMonitor {
             final String uptime,
             final double loadaverage,
             final String sizeHDDFree,
-            final int memSize) {
+            final int memSize
+    ) {
         this.ip = ip;
         this.uptime = uptime;
         this.loadaverage = loadaverage;

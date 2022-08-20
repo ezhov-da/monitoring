@@ -6,7 +6,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 
-public class FileNamePatternTreatmentTest {
+public class FileNamePatternProcessorTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -19,9 +19,9 @@ public class FileNamePatternTreatmentTest {
                         + " Use yyyyMMddHHmmss_ip.ip.ip.ip template.");
         this.expectedException.expect(IllegalArgumentException.class);
 
-        final FileNamePatternTreatment fileNamePatternTreatment =
-                new FileNamePatternTreatment("wefwfasgasg");
-        final FileJsonName fileJsonName = fileNamePatternTreatment.treatment();
+        final FileNamePatternProcessor fileNamePatternProcessor =
+                new FileNamePatternProcessor("wefwfasgasg");
+        final FileJsonName fileJsonName = fileNamePatternProcessor.process();
 
     }
 
@@ -33,9 +33,9 @@ public class FileNamePatternTreatmentTest {
         this.expectedException.expect(IllegalArgumentException.class);
 
 
-        final FileNamePatternTreatment fileNamePatternTreatment
-                = new FileNamePatternTreatment("12313.13.13123.");
-        final FileJsonName fileJsonName = fileNamePatternTreatment.treatment();
+        final FileNamePatternProcessor fileNamePatternProcessor
+                = new FileNamePatternProcessor("12313.13.13123.");
+        final FileJsonName fileJsonName = fileNamePatternProcessor.process();
     }
 
     @Test
@@ -46,19 +46,19 @@ public class FileNamePatternTreatmentTest {
                         + "Use yyyyMMddHHmmss_ip.ip.ip.ip template.");
         this.expectedException.expect(IllegalArgumentException.class);
 
-        final FileNamePatternTreatment fileNamePatternTreatment
-                = new FileNamePatternTreatment("20170721000803_123.123.123.1235");
+        final FileNamePatternProcessor fileNamePatternProcessor
+                = new FileNamePatternProcessor("20170721000803_123.123.123.1235");
         final FileJsonName fileJsonName
-                = fileNamePatternTreatment.treatment();
+                = fileNamePatternProcessor.process();
 
     }
 
     @Test
     public final void treatmentGoodFile() throws Exception {
 
-        final FileNamePatternTreatment fileNamePatternTreatment
-                = new FileNamePatternTreatment("20170721000803_123.123.123.123.json");
-        final FileJsonName fileJsonName = fileNamePatternTreatment.treatment();
+        final FileNamePatternProcessor fileNamePatternProcessor
+                = new FileNamePatternProcessor("20170721000803_123.123.123.123.json");
+        final FileJsonName fileJsonName = fileNamePatternProcessor.process();
 
         assertEquals("FileJsonName{date=Fri Jul 21 00:08:03 MSK 2017,"
                 + " ip=123.123.123.123}", fileJsonName.toString());

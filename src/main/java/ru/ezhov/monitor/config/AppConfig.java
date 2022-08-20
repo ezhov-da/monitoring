@@ -1,10 +1,6 @@
-package ru.ezhov.monitor.utils;
+package ru.ezhov.monitor.config;
 
 import org.aeonbits.owner.Config;
-
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * Конфигуратор приложения
@@ -25,7 +21,7 @@ public interface AppConfig extends Config {
 
     String patternDtFile();
 
-    String delimeterPattern();
+    String delimiterPattern();
 
     String regExpCheckIp();
 

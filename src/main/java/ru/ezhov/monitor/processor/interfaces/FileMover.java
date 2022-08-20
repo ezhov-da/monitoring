@@ -1,4 +1,4 @@
-package ru.ezhov.monitor.fileTreatment.interfaces;
+package ru.ezhov.monitor.processor.interfaces;
 
 import java.io.File;
 

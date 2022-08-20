@@ -1,24 +1,27 @@
 package ru.ezhov.monitor.utils;
 
+import ru.ezhov.monitor.config.AppConfig;
+import ru.ezhov.monitor.config.AppConfigInstance;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileNamePatternTreatment {
+public class FileNamePatternProcessor {
     private int countPartName;
     private AppConfig appConfig;
     private final String nameFile;
 
-    public FileNamePatternTreatment(String nameFile) {
+    public FileNamePatternProcessor(String nameFile) {
         this.nameFile = nameFile;
         this.appConfig = AppConfigInstance.getConfig();
         this.countPartName = 2;
     }
 
-    public FileJsonName treatment() throws ParseException, IllegalArgumentException {
-        final String[] names = this.nameFile.split(this.appConfig.delimeterPattern());
+    public FileJsonName process() throws ParseException, IllegalArgumentException {
+        final String[] names = this.nameFile.split(this.appConfig.delimiterPattern());
 
         if (names.length != this.countPartName) {
             throw getException();
@@ -36,7 +39,7 @@ public class FileNamePatternTreatment {
                         + "] "
                         + "- Not correct name file for treatment. Use "
                         + this.appConfig.patternDtFile()
-                        + this.appConfig.delimeterPattern()
+                        + this.appConfig.delimiterPattern()
                         + String.format("%s.%s.%s.%s", "ip", "ip", "ip", "ip")
                         + " template.");
     }

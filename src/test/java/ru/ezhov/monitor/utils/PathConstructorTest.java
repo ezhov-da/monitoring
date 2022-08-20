@@ -3,6 +3,7 @@ package ru.ezhov.monitor.utils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.ezhov.monitor.config.AppConfigInstance;
 
 import java.io.File;
 

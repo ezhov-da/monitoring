@@ -1,48 +1,51 @@
-package ru.ezhov.monitor.fileTreatment;
+package ru.ezhov.monitor.processor;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import ru.ezhov.monitor.beans.DataJsonObjectMonitor;
-import ru.ezhov.monitor.fileTreatment.interfaces.FileMover;
-import ru.ezhov.monitor.utils.*;
+import ru.ezhov.monitor.config.AppConfig;
+import ru.ezhov.monitor.config.AppConfigInstance;
+import ru.ezhov.monitor.processor.interfaces.FileMover;
+import ru.ezhov.monitor.utils.FileJsonName;
+import ru.ezhov.monitor.utils.FileNamePatternProcessor;
+import ru.ezhov.monitor.utils.PathConstructor;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 
-public class FileTreatmentRunnable implements Runnable {
+public class FileProcessorRunnable implements Runnable {
 
-    private static final Logger LOG = Logger
-            .getLogger(FileTreatment.class.getName());
+    private static final Logger LOG = Logger.getLogger(FileProcessor.class.getName());
 
-    private final Path treatmentObject;
+    private final Path processingObject;
 
     private AppConfig appConfig;
     private final FileMover fileMover;
 
-    public FileTreatmentRunnable(Path treatmentObject, FileMover fileMover) {
-        this.treatmentObject = treatmentObject;
+    public FileProcessorRunnable(Path processingObject, FileMover fileMover) {
+        this.processingObject = processingObject;
         appConfig = AppConfigInstance.getConfig();
         this.fileMover = fileMover;
     }
 
     @Override
     public final void run() {
+        LOG.info("execute path: " + this.processingObject);
 
-        LOG.info("execute path: " + this.treatmentObject);
-
-        final File file = treatmentObject.toFile();
+        final File file = processingObject.toFile();
 
         try {
-
             final String dataObject = new String(Files.readAllBytes(file.toPath()));
 
             if ("".equals(dataObject)) {
                 LOG.error("file: "
                         + file.getAbsolutePath()
-                        + " is empty and not be treatment");
+                        + " is empty and not be process");
+
+                moveFileOnException(file);
                 return;
             }
 
@@ -54,9 +57,9 @@ public class FileTreatmentRunnable implements Runnable {
                     mapper.readValue(dataObject, DataJsonObjectMonitor.class);
 
             final String nameFile = file.getName();
-            final FileNamePatternTreatment fileNamePatternTreatment
-                    = new FileNamePatternTreatment(nameFile);
-            final FileJsonName fileJsonName = fileNamePatternTreatment.treatment();
+            final FileNamePatternProcessor fileNamePatternProcessor
+                    = new FileNamePatternProcessor(nameFile);
+            final FileJsonName fileJsonName = fileNamePatternProcessor.process();
 
             LOG.info("from file: " + fileJsonName + "\n"
                     + "\tread object: " + dataJsonObjectMonitor);
@@ -71,25 +74,24 @@ public class FileTreatmentRunnable implements Runnable {
                     + file.getAbsolutePath(), ex);
             moveFileOnException(file);
         } catch (Exception ex) {
-            LOG.error("error executed file and try treatment file: "
+            LOG.error("error executed file and try process file: "
                     + file.getAbsolutePath(), ex);
             moveFileOnException(file);
         }
     }
 
     private void moveFileOnException(final File file) {
-        LOG.info("try treatment");
+        LOG.info("try process");
 
         final File newFile =
                 new File(
-                        new PathConstructor(
-                                file.getParent()).constructExceptionPathFolder()
-                                + File.separator
-                                + file.getName());
+                        new PathConstructor(file.getParentFile()).constructExceptionPathFolder(),
+                        file.getName()
+                );
         try {
             this.fileMover.move(file, newFile, this.appConfig.attemptsCount());
         } catch (Exception e) {
-            LOG.fatal("Don't treatment file ["
+            LOG.fatal("Don't process file ["
                     + file.getAbsolutePath()
                     + "] to "
                     + this.appConfig.folderExceptionFile()

@@ -1,9 +1,9 @@
-package ru.ezhov.monitor.fileTreatment;
+package ru.ezhov.monitor.processor;
 
 import org.apache.log4j.Logger;
-import ru.ezhov.monitor.fileTreatment.interfaces.FileMover;
-import ru.ezhov.monitor.utils.AppConfig;
-import ru.ezhov.monitor.utils.AppConfigInstance;
+import ru.ezhov.monitor.config.AppConfig;
+import ru.ezhov.monitor.config.AppConfigInstance;
+import ru.ezhov.monitor.processor.interfaces.FileMover;
 
 import java.io.File;
 
@@ -15,9 +15,6 @@ public class FileMoverError implements FileMover {
 
     private static final Logger LOG = Logger.getLogger(FileMoverError.class);
 
-    private File src;
-    private File dist;
-    private int countAttempt;
     private FileMover fileMover;
     private AppConfig appConfig;
 
@@ -38,27 +35,27 @@ public class FileMoverError implements FileMover {
                     + " folder. Try treatment to "
                     + appConfig.folderErrorFile()
                     + " folder.");
-            this.move();
+            this.movePrivate(src, dist, countAttempt);
         }
     }
 
-    private void move() {
+    private void movePrivate(final File src, final File dist, final int countAttempt) {
         final File fileDist = new File(
-                this.src.getParentFile().getAbsolutePath()
+                src.getParentFile().getParentFile().getAbsolutePath()
                         + File.separator
-                        + this.appConfig.folderErrorFile()
-                        + this.dist.getName()
+                        + this.appConfig.folderErrorFile(),
+                dist.getName()
         );
 
         try {
-            fileMover.move(this.src, fileDist, this.countAttempt);
+            fileMover.move(src, fileDist, countAttempt);
         } catch (Exception e) {
             LOG.fatal(
                     "Can't treatment file  to "
                             + this.appConfig.folderErrorFile()
-                            + " [" + this.src.getAbsolutePath()
+                            + " [" + src.getAbsolutePath()
                             + "]", e
-                    );
+            );
         }
     }
 }

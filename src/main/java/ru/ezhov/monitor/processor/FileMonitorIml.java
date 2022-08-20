@@ -1,14 +1,18 @@
-package ru.ezhov.monitor.fileTreatment;
+package ru.ezhov.monitor.processor;
 
 import org.apache.log4j.Logger;
-import ru.ezhov.monitor.fileTreatment.interfaces.FileMonitor;
-import ru.ezhov.monitor.fileTreatment.interfaces.Treatment;
-import ru.ezhov.monitor.utils.AppConfig;
-import ru.ezhov.monitor.utils.AppConfigInstance;
+import ru.ezhov.monitor.config.AppConfig;
+import ru.ezhov.monitor.config.AppConfigInstance;
+import ru.ezhov.monitor.processor.interfaces.FileMonitor;
+import ru.ezhov.monitor.processor.interfaces.Processor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -23,8 +27,8 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 public class FileMonitorIml implements FileMonitor {
     private static final Logger LOG = Logger
             .getLogger(FileMonitorIml.class.getName());
-    private String pathMonitor;
-    private Treatment<Runnable> treatment;
+    private File pathMonitor;
+    private Processor<Runnable> processor;
 
     private AtomicBoolean isStopMonitor = new AtomicBoolean(false);
 
@@ -33,13 +37,13 @@ public class FileMonitorIml implements FileMonitor {
     private AppConfig appConfig;
 
     /**
-     * @param pathToFolderMonitor - папка в которой ловятся файлы
-     * @param treatment           - обработчик файлов
+     * @param folder    - папка в которой ловятся файлы
+     * @param processor - обработчик файлов
      */
-    public FileMonitorIml(final String pathToFolderMonitor,
-                          final Treatment<Runnable> treatment) {
-        this.pathMonitor = pathToFolderMonitor;
-        this.treatment = treatment;
+    public FileMonitorIml(final File folder,
+                          final Processor<Runnable> processor) {
+        this.pathMonitor = folder;
+        this.processor = processor;
         this.appConfig = AppConfigInstance.getConfig();
     }
 
@@ -49,9 +53,9 @@ public class FileMonitorIml implements FileMonitor {
             LOG.info("start file monitor in folder: " + this.pathMonitor);
             final WatchService watcher = FileSystems.getDefault()
                     .newWatchService();
-            final Path dir = new File(this.pathMonitor).toPath();
+            final Path dir = this.pathMonitor.toPath();
 
-            for (;;) {
+            for (; ; ) {
                 if (this.isStopMonitor.get()) {
                     break;
                 }
@@ -69,17 +73,17 @@ public class FileMonitorIml implements FileMonitor {
                             .endsWith(this.appConfig.fileExtension())) {
 
                         final Runnable runnable =
-                                new FileTreatmentRunnable(child,
+                                new FileProcessorRunnable(child,
                                         new FileMoverException());
-                        this.treatment.treatment(runnable);
+                        this.processor.process(runnable);
                     } else {
                         LOG.info(
                                 "the file ["
                                         + child.toFile().getAbsolutePath()
-                                        +  "] has no "
+                                        + "] has no "
                                         + this.appConfig.fileExtension()
                                         + " extension"
-                                );
+                        );
                     }
                 }
 

@@ -1,7 +1,7 @@
-package ru.ezhov.monitor.fileTreatment;
+package ru.ezhov.monitor.processor;
 
 import org.apache.log4j.Logger;
-import ru.ezhov.monitor.fileTreatment.interfaces.FileMover;
+import ru.ezhov.monitor.processor.interfaces.FileMover;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class FileMoverException implements FileMover {
 
     private static final Logger LOG = Logger.getLogger(FileMoverException
-                    .class.getName());
+            .class.getName());
 
     private File src;
     private File dist;
@@ -27,12 +27,12 @@ public class FileMoverException implements FileMover {
         this.dist = dist;
         this.countAttempt = countAttempt;
 
-        final int attempts = 1;
-        this.moveWithAttempts(attempts);
+        this.moveWithAttempts(1);
     }
 
-    private void moveWithAttempts(final int attemptsNow) throws Exception {
-        if (attemptsNow < this.countAttempt) {
+    private void moveWithAttempts(final int currentAttempts) throws Exception {
+        if (currentAttempts < this.countAttempt) {
+            int nextAttempt = currentAttempts + 1;
             try {
                 LOG.info(
                         "try treatment file: ["
@@ -40,7 +40,7 @@ public class FileMoverException implements FileMover {
                                 + "] to ["
                                 + this.dist.getAbsolutePath()
                                 + "] attempt № "
-                                + attemptsNow);
+                                + currentAttempts);
 
                 Files.move(src.toPath(), dist.toPath(), REPLACE_EXISTING);
 
@@ -50,16 +50,18 @@ public class FileMoverException implements FileMover {
                                 + "] to ["
                                 + this.dist.getAbsolutePath()
                                 + "] attempt № "
-                                + attemptsNow);
+                                + currentAttempts);
 
                 return;
 
             } catch (IOException e) {
                 LOG.error("error treatment file: ["
-                        + this.src.getAbsolutePath()
-                        + "] attempt № "
-                        + attemptsNow, e);
-                this.moveWithAttempts(attemptsNow);
+                                + this.src.getAbsolutePath()
+                                + "] attempt № "
+                                + currentAttempts,
+                        e
+                );
+                this.moveWithAttempts(nextAttempt);
             }
         } else {
             LOG.fatal("fatal treatment file: ["

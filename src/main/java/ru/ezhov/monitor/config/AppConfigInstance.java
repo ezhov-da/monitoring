@@ -1,4 +1,4 @@
-package ru.ezhov.monitor.utils;
+package ru.ezhov.monitor.config;
 
 import org.aeonbits.owner.ConfigFactory;
 

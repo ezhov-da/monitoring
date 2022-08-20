@@ -1,5 +1,8 @@
 package ru.ezhov.monitor.utils;
 
+import ru.ezhov.monitor.config.AppConfig;
+import ru.ezhov.monitor.config.AppConfigInstance;
+
 import java.io.File;
 
 /**
@@ -8,23 +11,22 @@ import java.io.File;
 public class PathConstructor {
 
     private AppConfig appConfig;
-    private final String basicPath;
+    private final File folder;
 
-    public PathConstructor(String basicPath) {
-        this.basicPath = basicPath;
+    public PathConstructor(File folder) {
+        this.folder = folder;
         this.appConfig = AppConfigInstance.getConfig();
     }
 
-    public final String constructExceptionPathFolder() {
+    public final File constructExceptionPathFolder() {
         return construct(this.appConfig.folderExceptionFile());
-
     }
 
-    public final String constructErrorPathFolder() {
+    public final File constructErrorPathFolder() {
         return construct(this.appConfig.folderErrorFile());
     }
 
-    private String construct(final String folder) {
-        return this.basicPath + File.separator + folder;
+    private File construct(final String folder) {
+        return new File(this.folder, folder);
     }
 }

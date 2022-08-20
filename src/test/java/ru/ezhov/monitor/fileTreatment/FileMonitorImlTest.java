@@ -3,8 +3,9 @@ package ru.ezhov.monitor.fileTreatment;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.ezhov.monitor.fileTreatment.interfaces.Treatment;
-import ru.ezhov.monitor.utils.AppConfigInstance;
+import ru.ezhov.monitor.processor.FileMonitorIml;
+import ru.ezhov.monitor.processor.interfaces.Processor;
+import ru.ezhov.monitor.config.AppConfigInstance;
 
 import java.io.File;
 
@@ -20,15 +21,15 @@ public class FileMonitorImlTest {
         final File folderWait = temporaryFolder.newFolder(AppConfigInstance
                 .getConfig().folderExceptionFile());
 
-        final Treatment<Runnable> treatment = new Treatment<Runnable>() {
+        final Processor<Runnable> processor = new Processor<Runnable>() {
             @Override
-            public void treatment(Runnable treatmentObject) {
+            public void process(Runnable treatmentObject) {
                 System.out.println("test");
             }
         };
 
         final FileMonitorIml fileMonitorIml = new FileMonitorIml(
-                folderWait.getAbsolutePath(), treatment);
+                folderWait.getAbsolutePath(), processor);
         final Thread thread = new Thread(fileMonitorIml);
         thread.start();
 

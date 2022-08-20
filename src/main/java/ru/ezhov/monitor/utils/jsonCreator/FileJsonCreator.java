@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import ru.ezhov.monitor.beans.DataJsonObjectMonitor;
-import ru.ezhov.monitor.utils.AppConfigInstance;
+import ru.ezhov.monitor.config.AppConfigInstance;
 
 import java.io.File;
 import java.io.IOException;

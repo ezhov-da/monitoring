@@ -3,7 +3,8 @@ package ru.ezhov.monitor.fileTreatment;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.ezhov.monitor.utils.AppConfigInstance;
+import ru.ezhov.monitor.processor.FileMoverException;
+import ru.ezhov.monitor.config.AppConfigInstance;
 
 import java.io.File;
 
